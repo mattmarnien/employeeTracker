@@ -4,12 +4,15 @@ USE company_db
 
 CREATE TABLE employee(
     id INT AUTO_INCREMENT NOT NULL,
-    first_name VARCHAR(30) NOT NULL,
-    last_name VARCHAR(30) NOT NULL,
-    role_id INT,
-    manager_id INT,
+    firstName VARCHAR(30) NOT NULL,
+    lastName VARCHAR(30) NOT NULL,
+    roleId INT,
+    managerId INT,
     PRIMARY KEY (id)
 ); 
+
+INSERT INTO employee(firstName, lastName, roleId, managerId)
+VALUES('John', 'Smith', 1, 0);
 
 CREATE TABLE role(
     id INT AUTO_INCREMENT NOT NULL,

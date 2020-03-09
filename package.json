@@ -17,7 +17,9 @@
   },
   "homepage": "https://github.com/mattmarnien/employeeTracker#readme",
   "dependencies": {
+    "console.table": "^0.10.0",
     "dotenv": "^8.2.0",
-    "inquirer": "^7.0.6"
+    "inquirer": "^7.0.6",
+    "mysql": "^2.18.1"
   }
 }

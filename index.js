@@ -2,6 +2,24 @@
 var mysql = require("mysql");
 var inquirer = require('inquirer');
 var verifyUser = require('./security.js')
+var query = require('./query.js');
+
+var connection = mysql.createConnection({
+    port: 3306,
+    host: "localhost",
+    user: "root",
+    password: "AlineWeasel62!",
+    database: "company_db"
+
+});
+
+// async function verify() {
+//     let users = connection.query("SELECT * FROM security;", (err, res) => {
+//     if(err)throw err;
+//     return res}
+//     )
+//     return users;
+// }
 
 async function whatDo() {
     let choice = await inquirer.prompt([
@@ -15,7 +33,7 @@ async function whatDo() {
     ]);
     switch (choice) {
         case 'View Employees':
-            showAllEmployees();
+            query.viewEmployee();
 
         case 'Add Employees':
             addEmployee();
@@ -53,56 +71,27 @@ async function whatDo() {
 
         default:
     };
-
-    function showAllEmployees() {
-        connection.query("SELECT * FROM employee", function (err, res) {
-            if (err) throw err;
-            console.log(res);
-        })
-    }
-
-
-async function showDepartment(){
-
-    let deparmentArray = connection.query("SELECT * FROM department", function (err, res) {
-        if (err) throw err;
-        return(res);
-    })
-    console.log(deparmentArray);
-
-    let departmentChoice = await inquirer.prompt([
-        {
-            type: 'list',
-            message: 'Which department would you like to view?',
-            name: 'choice',
-            list: departmentArray
-        }
-        ]);
-        for(let i = 0; i < departmentArray.length; i++){
-            if(departmentChoice === departmentArray[i].name){
-                console.log(departmentArray.name + departmentArray.STUFFHERE)
-            }
-        }
 }
 
-
-
-
-    var connection = mysql.createConnection({
-        port: 3306,
-        host: process.env.DB_HOST,
-        username: process.env.DB_USER,
-        password: process.env.DB_PASS,
-        database: "company_db"
-
-    });
-    connection.connect(function (err) {
-        if (err) throw err;
-        console.log("connected as id " + connection.threadId);
-    });
-
-    function newQuery() {
-        verifyUser();
-
-
+connection.connect(async function (err) {
+    if (err) throw err;
+    console.log("connected as id " + connection.threadId);
+    
+    login = await verifyUser();
+    console.log(login);
+    if(login){
+       await whatDo();
     }
+    else{
+        connection.end();
+    }
+
+                
+            
+  
+
+        
+})
+
+
+
