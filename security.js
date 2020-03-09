@@ -62,6 +62,9 @@ async function verifyUser() {
             console.log("Login Successful");
             return true;
         } 
+        else {
+            return false;
+        }
     }
         
 }
