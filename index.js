@@ -1,109 +1,108 @@
 // Imports
 var mysql = require("mysql");
-var inqurier = require('inquirer');
+var inquirer = require('inquirer');
+var verifyUser = require('./security.js')
 
-
-
-
-
-
-
-var connection = mysql.createConnection({
-      host: "localhost",
-    
-      // Your port; if not 3306
-      port: 3306,
-    
-      // Your username
-      user: "root",
-    
-      // Your password
-      password: "",
-      database: "greatbay"
-    });
-    // var tableToSearch = 'songs'
-    // var desiredField = 'genre'
-    // var fieldMatch = 'Pop'
-    // var searchFor = `FROM ${tableToSearch} WHERE ${desiredField} = '${fieldMatch}'`
-    const inquirer = require("inquirer");
-    ​
-    inquirer.prompt([
+async function whatDo() {
+    let choice = await inquirer.prompt([
         {
-            type: "list",
-            message: "Would you like to POST or BID?",
-            choice: ["POST", "BID", "EXIT"],
-            title: "auction"
-        },
-    ]).then(
-        function (answers) {
-            if (answers.auction === "POST") {
-                postQuestions();
-            } else if (answers.auction === "BID") {
-                bidQuestions();
-            } else {
-                break;
+            type: 'list',
+            message: "What would you like to do?",
+            name: "choice",
+            choices: ["View Employees", "Add Employee", "View Department", "Add Department", "View Roles", "Add Roles", "Update Employee Roles"]
+        }
+
+    ]);
+    switch (choice) {
+        case 'View Employees':
+            showAllEmployees();
+
+        case 'Add Employees':
+            addEmployee();
+
+
+        case 'Remove Employee':
+            removeEmployee();
+
+
+        case 'View Department':
+            showDepartment();
+
+
+        case 'Add Department':
+            addDepartment();
+
+        case 'Remove Department':
+            removeDepartment();
+
+
+        case 'View Roles':
+            viewRoles();
+
+
+        case 'Add Roles':
+            addRoles();
+
+
+        case 'Remove Roles':
+            removeRoles();
+
+
+        case 'Update Employee Roles':
+            changeEmployeeRoles();
+
+        default:
+    };
+
+    function showAllEmployees() {
+        connection.query("SELECT * FROM employee", function (err, res) {
+            if (err) throw err;
+            console.log(res);
+        })
+    }
+
+
+async function showDepartment(){
+
+    let deparmentArray = connection.query("SELECT * FROM department", function (err, res) {
+        if (err) throw err;
+        return(res);
+    })
+    console.log(deparmentArray);
+
+    let departmentChoice = await inquirer.prompt([
+        {
+            type: 'list',
+            message: 'Which department would you like to view?',
+            name: 'choice',
+            list: departmentArray
+        }
+        ]);
+        for(let i = 0; i < departmentArray.length; i++){
+            if(departmentChoice === departmentArray[i].name){
+                console.log(departmentArray.name + departmentArray.STUFFHERE)
             }
         }
-    )
-    ​
-    function postQuestions() {
-        inquirer.prompt([
-            {
-                type: "input",
-                message: "What would you like to post?",
-                title: "item"
-            },
-            {
-                type: "input",
-                message: "In what category would you like to place your action?",
-                title: "category"
-            },
-            {
-                type: "input",
-                message: "What do you want your starting bid to be?",
-                title: "startingBid"
-            }
-        ]).then(
-        
-        )
-    }
-    ​
-    function bidQuestions() {
-        getItems()
-        inquirer.prompt([
-            {
-                type: "input",
-                message: "What do you want to bid on(please enter ID)?",
-                title: "bidItem"
-            },
-            {
-                type: "input",
-                message: "How much do you want to bid?",
-                title: "bidAmount"
-            }
-        ]).then(
-           
-    ​
-        )
-    }
-    Collapse
-    
-    
-    
-    
-    
-    connection.connect(function(err) {
+}
+
+
+
+
+    var connection = mysql.createConnection({
+        port: 3306,
+        host: process.env.DB_HOST,
+        username: process.env.DB_USER,
+        password: process.env.DB_PASS,
+        database: "company_db"
+
+    });
+    connection.connect(function (err) {
         if (err) throw err;
         console.log("connected as id " + connection.threadId);
-      });
-    
-      function getItems() {
-        connection.query("SELECT * FROM items", function(err, res){
-            if(err) throw err;
-            for(let i = 0; i < res.length; i++){
-            console.log(res[i])
-            }
-          })
-        }
-      
-    
+    });
+
+    function newQuery() {
+        verifyUser();
+
+
+    }
