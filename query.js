@@ -1,6 +1,15 @@
 var mysql = require("mysql");
 var inq = require('inquirer');
-const cTable = require('console.table');
+require('console.table');
+
+
+const connection = mysql.createConnection({
+    port: 3306,
+    host: "localhost",
+    user: "root",
+    password: "AlineWeasel62!",
+    database: "company_db"
+});
 
 
 
@@ -12,20 +21,22 @@ function viewDepartments() {
     })
     console.table(deparmentArray);
 
-    deparmentArray.map(x => console.table(x));
+    deparmentArray.map(x => console.log(x));
 
 }
 
-function viewEmployees() {
-    connection.query('SELECT * FROM employees', (err, data) => {
+ function viewEmployees() {
+    connection.query('SELECT * FROM employee', (err, data) => {
         if (err) throw err;
-        data.map(x => console.table(x));
+        connection.end();
+       console.table(data);
+       
     }
     )
 
 
 }
-async function addEmployee() {
+ async function addEmployee() {
     let newEmp = await inq.prompt([
         {
             type: "input",
