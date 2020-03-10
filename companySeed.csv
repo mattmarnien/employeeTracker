@@ -1,0 +1,12 @@
+id,firstName,lastName,roleId,managerId
+1,John,Cage,11,NULL
+3,Artemis,Keening,1,1
+4,Cat,Bert,4,1
+5,Data,Dog,7,1
+6,Creed,Bratton,5,1
+7,Stewart,Mills,2,3
+8,Fozzy,McStew,2,3
+9,Izzy,Belle,3,4
+10,Chance,Coyle,6,6
+11,Alice,Stalwell,8,5
+12,Nancy,Connor,9,1

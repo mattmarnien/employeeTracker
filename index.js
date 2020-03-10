@@ -115,4 +115,55 @@ async function viewEmployees(){
 
 }
 
-viewEmployees();
+async function removeEmployee() {
+    connection.query("SELECT * FROM employee", async (err, data) =>{
+        if(err) throw err;
+        empArr = [];
+        for(let i = 0; i <data.length; i ++){
+            empArr.push(data[i].firstName + " " + data[i].lastName)
+        }
+        let removed = await inq.prompt([
+            {
+                type: "list",
+                message: "Which employee would you like to remove?",
+                name: "choice",
+                choices: empArr
+            }          
+        ])
+        let removedArr = await removed.choice.split(" ");
+        console.log(removedArr);
+        connection.query(`DELETE FROM employee where firstName = "${removedArr[0]}" AND lastName = "${removedArr[1]}"`, err => {
+            if(err) throw err;
+            console.log("Employee Removed.");
+        })
+    })
+}
+
+async function viewDepartment() {
+    connection.query("SELECT * FROM department", async (err, data) => {
+        if(err) throw err;
+        let depArr = [];
+        for(let i = 0; i < data.length; i++){
+            depArr.push(data[i].name);
+        }   
+    let chosen = await inq.prompt([
+        {
+            type: "list",
+            message: "Which department would you like to view?",
+            name: "departmentChoice",
+            choices: depArr
+        }
+    ]);
+    let chosenId = '';
+    for(let i = 0; i < data.length; i++){
+        if(data[i].name === chosen.departmentChoice){
+            chosenId = data[i].id;
+        }
+    }  
+    connection.query(`SELECT employee.firstName, employee.lastName, role.title, department.name FROM Employee JOIN role ON employee.roleId = role.id JOIN department ON role.department_id = department.id WHERE department_id = 1 = ${chosenId}`, (err, data) => {
+        if(err) throw err;
+        console.table(data);
+    })
+})
+}
+
