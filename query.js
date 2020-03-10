@@ -13,31 +13,27 @@ const connection = mysql.createConnection({
 
 
 
-function viewDepartments() {
+// function viewDepartments() {
 
-    let deparmentArray = connection.query("SELECT * FROM department", function (err, res) {
-        if (err) throw err;
-        return (res);
-    })
-    console.table(deparmentArray);
+//     connection.query("SELECT * FROM department", function (err, res) {
+//         if (err) throw err;
+//         console.table(res);
+//     })
 
-    deparmentArray.map(x => console.log(x));
 
-}
 
- function viewEmployees() {
+// }
+
+async function viewEmployees() {
     connection.query('SELECT * FROM employee', (err, data) => {
         if (err) throw err;
-        connection.end();
-       console.table(data);
-       
+        console.table(data);
+        return;
     }
     )
-
-
 }
- async function addEmployee() {
-    let newEmp = await inq.prompt([
+function addEmployee() {
+    inq.prompt([
         {
             type: "input",
             message: "What is the new employee's first name?",
@@ -47,47 +43,68 @@ function viewDepartments() {
             type: "input",
             message: "What is the new employee's last name?",
             name: "lastname"
-        },
-        {
-            type: "input",
-            message: "What department will this employee work in?",
-            name: "department"
-        },
-
-
-        {
-            type: "input",
-            message: "What is the new employee's role?",
-            name: "role"
         }
-    ])
-    connection.query(`INSERT INTO employee(firstname, lastname, roleId, managerId) VALUES(${newEmp.firstname}, ${newEmp.lastname}, ${newEmp.role}, ${newEmp.manager}"`, (err, data) => {
-        if (err) throw err;
-        console.log(`${remove.toRemove} has been removed from the database.`)
-    })
+    ]).then( (err, newEmp) => {
+        if(err) throw err;
+        connection.query(`INSERT INTO employee(firstname, lastname) VALUES("${newEmp.firstname}", "${newEmp.lastname}")`, async (err, data) => {
+            if (err) throw err;
+    
+            console.log(`\n \n ${newEmp.firstname} ${newEmp.lastname} has been added into the database. \n \n`)
+        });
+    });
+    
+
 }
 
 
 
 
-async function deleteEmployee() {
-    let remove = await inq.prompt([
-        {
-            type: "input",
-            message: "Which employee do you want to remove?",
-            name: "toRemove"
+function removeEmployee() {
+    connection.query('SELECT * FROM employee', async (err, data) => {
+        if(err) throw err;
+        empObj = data;
+        empArr = [];
+        for (let i = 0; i < empObj.length; i++) {
+            let newStr = '';
+            newStr = empObj[i].firstName + " " + empObj[i].lastName;
+            empArr.push(newStr);
         }
-    ])
-    connection.query(`Delete FROM employee WHERE name ="${remove.toRemove}"`, (err, data) => {
-        if (err) throw err;
-        console.log(`${remove.toRemove} has been removed from the database.`)
-    })
+        inq.prompt([
+            {
+                type: "list",
+                message: "Which employee do you want to remove?",
+                name: "remove",
+                choices: empArr
+            },
+            {
+                type: "confirm",
+                message: `Are you sure?`,
+                name: "confirm"
+
+            }
+        ]).then((err, remove) => {
+            if (remove.confirm) {
+                let removalArr = remove.remove.split(" ");
+                connection.query(`Delete FROM employee WHERE firstName ="${removalArr[0]} AND lastName ="${removalArr[1]}";`, (err) => {
+                    if (err) throw err;
+                    console.log(`${remove.Remove} has been removed from the database.`);
+
+                })
+            }
+        })
+
+
+
+    }
+    )
 }
+
+
 
 module.exports = {
     viewEmployees: viewEmployees,
-    viewDepartments: viewDepartments,
-    deleteEmployee: deleteEmployee,
+    // viewDepartments: viewDepartments,
+    removeEmployee: removeEmployee,
     addEmployee: addEmployee
 
 }

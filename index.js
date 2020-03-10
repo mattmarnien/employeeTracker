@@ -1,8 +1,9 @@
 // Imports
 var mysql = require("mysql");
-var inquirer = require('inquirer');
-var query = require('./query.js');
+var inq = require('inquirer');
+// var query = require('./query.js');
 let login = false;
+const cTable = require('console.table');
 
 var connection = mysql.createConnection({
     port: 3306,
@@ -13,6 +14,11 @@ var connection = mysql.createConnection({
 
 });
 
+connection.connect(async err =>{
+    if(err) throw err;
+    console.log("Connected as " +connection.threadId);
+})
+
 // async function verify() {
 //     let users = connection.query("SELECT * FROM security;", (err, res) => {
 //     if(err)throw err;
@@ -22,8 +28,8 @@ var connection = mysql.createConnection({
 // }
 
 
-async function init() {
-    let user = await inquirer.prompt([
+function init() {
+    inq.prompt([
         {
             type: "input",
             message: "Enter your username:",
@@ -48,11 +54,10 @@ async function init() {
                 return true;
             }
         }
-    ])
-
+    ]).then(user => {
     connection.connect(async function (err) {
         if (err) throw err;
-        connection.query("SELECT * FROM security;", async function (err, data) {
+        connection.query("SELECT * FROM security;", function (err, data) {
             if (err) throw err;
             data.forEach(element => {
                 if (element.username === user.username && element.password === user.password) {
@@ -63,90 +68,51 @@ async function init() {
             console.log(login);
             if (login) {
                 console.log("Login Successful \n \n");
-                whatDo();
+                connection.end();
             }
             else {
                 console.log("Login failed. Please try again \n \n");
                 connection.end();
-                return;
+
             }
         })
     })
+});
 }
 
-async function whatDo() {
-    let choice = await inquirer.prompt([
+// init();
+
+async function addEmployee(){
+    console.log("\n \n")
+    let newEmp = await inq.prompt([
         {
-            type: 'list',
-            message: "What would you like to do?",
-            name: "choice",
-            choices: ["View Employees", "Add Employee", "View Department", "Add Department", "View Roles", "Add Roles", "Update Employee Roles", "Exit"]
-        }
+            type: "input",
+            message: "What is the employee's first name?",
+            name: "firstname"
+            
+        },
+        {
+        type: "input",
+        message: "What is the employee's last name?",
+        name: "lastname"
+    }
+        ]);
+    connection.query(`INSERT INTO employee(firstName, lastName) VALUES("${newEmp.firstname}", "${newEmp.lastname}")`, (err,data) =>{
+        if(err) throw err;
+        console.log("Employee Added");
+    })
 
-    ]);
-    switch (choice.choice) {
-        case 'View Employees':
-            query.viewEmployees();
-            whatDo();
-            break;
+    
+}
 
-        // case 'Add Employees':
-        //     addEmployee();
+async function viewEmployees(){
+    console.log("\n\n\n");
+    connection.query("SELECT * FROM employee", (err, data) =>{
+        if(err) throw err;
+        console.table(data);
 
-
-        // case 'Remove Employee':
-        //     removeEmployee();
-
-
-        // case 'View Department':
-        //     showDepartment();
-
-
-        // case 'Add Department':
-        //     addDepartment();
-
-        // case 'Remove Department':
-        //     removeDepartment();
-
-
-        // case 'View Roles':
-        //     viewRoles();
-
-
-        // case 'Add Roles':
-        //     addRoles();
-
-
-        // case 'Remove Roles':
-        //     removeRoles();
-
-
-        // case 'Update Employee Roles':
-        //     changeEmployeeRoles();
-
-        case 'Exit':
-            connection.end();
-            break;
-
-        // default:
-    };
+    })
 
 }
 
-init();
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+viewEmployees();
