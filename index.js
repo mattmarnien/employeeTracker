@@ -14,12 +14,8 @@ var connection = mysql.createConnection({
 
 });
 
-// connection.connect(async err => {
-//     if (err) throw err;
-//     console.log("Connected as " + connection.threadId);
-// })
 
-// initialized DB connection and checks if user has credentials
+// initialized DB connection and checks user credentials
 function init() {
     inq.prompt([
         {
@@ -96,9 +92,11 @@ async function addEmployee() {
         if (err) throw err;
         console.log("Employee Added");
     })
+        whatToDo();
+    }
 
 
-}
+
 // displays all current employees
 async function viewEmployees() {
     console.log("\n\n\n");
@@ -107,7 +105,7 @@ async function viewEmployees() {
         console.table("\n \n" +data + "\n\n");
 
     })
-
+    whatToDo();
 }
 // removes an employee
 async function removeEmployee() {
@@ -132,6 +130,7 @@ async function removeEmployee() {
             console.log("Employee Removed.");
         })
     })
+    whatToDo();
 }
 // displays employee by department
 async function viewEmployeebyDepartment() {
@@ -160,6 +159,7 @@ async function viewEmployeebyDepartment() {
             console.table(data);
         })
     })
+    whatToDo();
 }
 
 
@@ -169,6 +169,7 @@ async function viewDepartments() {
         if (err) throw err;
         console.table(data);
     })
+    whatToDo();
 }
 
 
@@ -185,6 +186,7 @@ async function addDepartment() {
         if (err) throw err;
         console.log("New department added.");
     })
+    whatToDo();
 }
 
 // removes a department
@@ -208,6 +210,7 @@ async function removeDepartment() {
             console.log("Department Deleted")
         })
     })
+    whatToDo();
 }
 
 // displays all roles
@@ -216,6 +219,7 @@ async function viewRoles() {
         if (err) throw err;
         console.table(data);
     })
+    whatToDo();
 }
 
 // adds a new role
@@ -256,6 +260,7 @@ async function addRole() {
         })
 
     })
+    whatToDo();
 }
 
 // deletes a role
@@ -279,6 +284,7 @@ async function removeRole() {
             console.log("Role removed.")
         })
     })
+    whatToDo();
 }
 // updates a given employee's role
 async function updateRole() {
@@ -326,79 +332,65 @@ async function updateRole() {
             })
         })
     })
+    whatToDo();
 }
 
-// should route the user into various functions
-function whatToDo(){
-    inq.prompt([
+// should route the user into various functions, is nested in all other functions to return to selection menu after tasks
+async function whatToDo(){
+    let done = false;
+    let choice = await inq.prompt([
         {
             type: "list",
             message: "What would you like to do?",
-            name: "choice",
-            choices: ['Add Employee', 'View Employees', 'Remove Employee', 'View Employee by Department', 'View Departments', 'Add Departments', 'Remove Departments', 'View Roles', 'Add Role', 'Remove Role', "Update an Employee's Role", 'Exit']
+            name: "function",
+            choices: ['Add Employee', 'View Employees', 'Remove Employee', 'View Employee by Department', 'View Departments', 'Add Department', 'Remove Department', 'View Roles', 'Add Role', 'Remove Role', "Update an Employee's Role", 'Exit']
         }
-    ]).then((choice) => {
-    switch (choice.choice) {
-        case 'Add Employee':
-            addEmployee();
-            break;
+    ])
 
-        case 'View Employees':
-            viewEmployees();
-            break;
-
-        case 'Remove Employee':
-            removeEmployee();
-            break;
-
-        case 'View Employee by Department':
-            viewEmployeebyDepartment();
-            break;
-
-        case 'View Departments':
-            viewDepartments();
-            break;
-
-        case 'Add Departments':
-            addDepartment();
-            break;
-
-        case 'Remove Departments':
-            removeDepartment();
-            break;
-
-        case 'View Roles':
-            viewRoles();
-            break;
-
-        case 'Add Role':
-            addRole();
-            break;
-
-        case 'Remove Role':
-            removeRole();
-            break;
-
-        case "Update an Employee's Role":
-            updateRole();
-            break;
-
-        case 'Exit':
-           connection.end();
-            return;
-
-        default:
-            connection.end();
-            break;
-    }}).then(() => {    
-        whatToDo();        
-    }).catch( err => {
-        if(err) throw err;
-    })
-
-}
+    if(choice.function === 'Add Employee'){
+        addEmployee();
+    }
+    else if(choice.function === 'View Employee'){
+        viewEmployees();
+    }
+    else if(choice.function === 'Remove Employee'){
+        removeEmployee();
+    }
+    else if(choice.function === 'View Employee by Department'){
+        viewEmployeebyDepartment();
+    }
+    else if(choice.function === 'View Departments'){
+        viewDepartments();
+    }
+    else if(choice.function === 'Add Departments'){
+        addDepartment();
+    }
+    else if(choice.function === 'Remove Department'){
+        removeDepartment();
+    }
+    else if(choice.function === 'View Roles'){
+        viewRoles();
+    }
+    else if(choice.function === 'Add Role'){
+        addRole();
+    }
+    else if(choice.function === 'Remove Role'){
+        removeRole();
+    }
+    else if(choice.function === "Update an Emplopyee's Role"){
+        updateRole();
+    }
+    else if(choice.function === 'Exit'){
+        connection.end();
+        return;
+    }
+   
+          
+    }
 
 
+
+// Starts the program
 
 init();
 
