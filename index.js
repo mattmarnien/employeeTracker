@@ -1,19 +1,20 @@
 // Imports
 var mysql = require("mysql");
 var inq = require('inquirer');
-// var query = require('./query.js');
-let login = false;
 const cTable = require('console.table');
+require('dotenv').config()
 
-var connection = mysql.createConnection({
+
+let login = false;
+
+const connection = mysql.createConnection({
     port: 3306,
-    host: "localhost",
-    user: "root",
-    password: "AlineWeasel62!",
+    host: process.env.DB_HOST,
+    user: process.env.DB_USER,
+    password: process.env.DB_PASS,
     database: "company_db"
 
 });
-
 
 // initialized DB connection and checks user credentials
 function init() {
@@ -66,11 +67,10 @@ function init() {
             })
         })
     }).catch(err => {
-        if(err) throw err;
+        if (err) throw err;
     })
-    ;
+        ;
 }
-
 
 // adds a new employee to the employee table
 async function addEmployee() {
@@ -92,21 +92,21 @@ async function addEmployee() {
         if (err) throw err;
         console.log("Employee Added");
     })
-        whatToDo();
-    }
-
-
+    whatToDo();
+}
 
 // displays all current employees
 async function viewEmployees() {
     console.log("\n\n\n");
     connection.query("SELECT * FROM employee", (err, data) => {
         if (err) throw err;
-        console.table("\n \n" +data + "\n\n");
+        console.table("\n \n" + data + "\n\n");
+        whatToDo();
 
     })
-    whatToDo();
+   
 }
+
 // removes an employee
 async function removeEmployee() {
     connection.query("SELECT * FROM employee", async (err, data) => {
@@ -128,10 +128,12 @@ async function removeEmployee() {
         connection.query(`DELETE FROM employee where firstName = "${removedArr[0]}" AND lastName = "${removedArr[1]}"`, err => {
             if (err) throw err;
             console.log("Employee Removed.");
+            whatToDo();
         })
     })
-    whatToDo();
+    
 }
+
 // displays employee by department
 async function viewEmployeebyDepartment() {
     connection.query("SELECT * FROM department", async (err, data) => {
@@ -157,21 +159,20 @@ async function viewEmployeebyDepartment() {
         connection.query(`SELECT employee.firstName, employee.lastName, role.title, department.name FROM Employee JOIN role ON employee.roleId = role.id JOIN department ON role.department_id = department.id WHERE department_id = 1 = ${chosenId}`, (err, data) => {
             if (err) throw err;
             console.table(data);
+            whatToDo();
         })
     })
-    whatToDo();
 }
-
 
 // views existing departments
 async function viewDepartments() {
     connection.query("SELECT * FROM department", (err, data) => {
         if (err) throw err;
         console.table(data);
+        whatToDo();
     })
-    whatToDo();
+    
 }
-
 
 // adds a new department
 async function addDepartment() {
@@ -185,8 +186,9 @@ async function addDepartment() {
     connection.query(`INSERT INTO department(name) VALUES("${newDep.newDepartment}")`, (err) => {
         if (err) throw err;
         console.log("New department added.");
+        whatToDo();
     })
-    whatToDo();
+   
 }
 
 // removes a department
@@ -208,18 +210,19 @@ async function removeDepartment() {
         connection.query(`DELETE FROM department WHERE name = "${depToRemove.choice}"`, err => {
             if (err) throw err;
             console.log("Department Deleted")
+            whatToDo();
         })
     })
-    whatToDo();
+    
 }
 
 // displays all roles
 async function viewRoles() {
     connection.query("SELECT * FROM role", (err, data) => {
         if (err) throw err;
-        console.table(data);
+        whatToDo();
     })
-    whatToDo();
+   
 }
 
 // adds a new role
@@ -257,10 +260,11 @@ async function addRole() {
         } connection.query(`INSERT INTO role(title, salary, department_id) VALUES("${newRole.newRole}", ${newRole.salary}, ${chosenId})`, err => {
             if (err) throw err;
             console.log("New role added.")
+            whatToDo();
         })
 
     })
-    whatToDo();
+   
 }
 
 // deletes a role
@@ -282,10 +286,12 @@ async function removeRole() {
         connection.query(`DELETE FROM role WHERE title = "${roleToRemove.role}"`, err => {
             if (err) throw err;
             console.log("Role removed.")
+            whatToDo();
         })
     })
-    whatToDo();
+    
 }
+
 // updates a given employee's role
 async function updateRole() {
     connection.query("SELECT * FROM employee", async (err, data) => {
@@ -316,7 +322,7 @@ async function updateRole() {
                     choices: roleArr
                 }
             ])
-            let newRoleId ='';         
+            let newRoleId = '';
             for (let j = 0; j < roleArr.length; j++) {
                 if (roleArr[j] === toUpdate.newRole) {
                     console.log("if triggered");
@@ -329,14 +335,15 @@ async function updateRole() {
             connection.query(`UPDATE employee SET roleId = ${newRoleId} WHERE firstName = "${toUpdateArr[0]}" AND lastName = "${toUpdateArr[1]}"`, err => {
                 if (err) throw err;
                 console.log("Employee Updated.");
+                whatToDo();
             })
         })
     })
-    whatToDo();
+   
 }
 
 // should route the user into various functions, is nested in all other functions to return to selection menu after tasks
-async function whatToDo(){
+async function whatToDo() {
     let done = false;
     let choice = await inq.prompt([
         {
@@ -346,49 +353,45 @@ async function whatToDo(){
             choices: ['Add Employee', 'View Employees', 'Remove Employee', 'View Employee by Department', 'View Departments', 'Add Department', 'Remove Department', 'View Roles', 'Add Role', 'Remove Role', "Update an Employee's Role", 'Exit']
         }
     ])
-
-    if(choice.function === 'Add Employee'){
-        addEmployee();
+    switch (choice.function) {
+        case 'Add Employee':
+            addEmployee();
+            break;
+        case 'View Employee':
+            viewEmployees();
+            break;
+        case 'Remove Employee':
+            removeEmployee();
+            break;
+        case 'View Employee by Department':
+            viewEmployeebyDepartment();
+            break;
+        case 'View Departments':
+            viewDepartments();
+            break;
+        case 'Add Departments':
+            addDepartment();
+            break;
+        case 'Remove Department':
+            removeDepartment();
+            break;
+        case 'View Roles':
+            viewRoles();
+            break;
+        case 'Add Role':
+            addRole();
+            break;
+        case 'Remove Role':
+            removeRole();
+            break;
+        case "Update an Emplopyee's Role":
+            updateRole();
+            break;
+        case 'Exit':
+            connection.end();
+            return;
     }
-    else if(choice.function === 'View Employee'){
-        viewEmployees();
-    }
-    else if(choice.function === 'Remove Employee'){
-        removeEmployee();
-    }
-    else if(choice.function === 'View Employee by Department'){
-        viewEmployeebyDepartment();
-    }
-    else if(choice.function === 'View Departments'){
-        viewDepartments();
-    }
-    else if(choice.function === 'Add Departments'){
-        addDepartment();
-    }
-    else if(choice.function === 'Remove Department'){
-        removeDepartment();
-    }
-    else if(choice.function === 'View Roles'){
-        viewRoles();
-    }
-    else if(choice.function === 'Add Role'){
-        addRole();
-    }
-    else if(choice.function === 'Remove Role'){
-        removeRole();
-    }
-    else if(choice.function === "Update an Emplopyee's Role"){
-        updateRole();
-    }
-    else if(choice.function === 'Exit'){
-        connection.end();
-        return;
-    }
-   
-          
-    }
-
-
+}
 
 // Starts the program
 
