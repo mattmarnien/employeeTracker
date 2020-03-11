@@ -27,7 +27,7 @@ connection.connect(async err =>{
 //     return users;
 // }
 
-
+// initialized DB connection and checks if user has credentials
 function init() {
     inq.prompt([
         {
@@ -80,8 +80,8 @@ function init() {
 });
 }
 
-// init();
 
+// adds a new employee to the employee table
 async function addEmployee(){
     console.log("\n \n")
     let newEmp = await inq.prompt([
@@ -104,7 +104,7 @@ async function addEmployee(){
 
     
 }
-
+// displays all current employees
 async function viewEmployees(){
     console.log("\n\n\n");
     connection.query("SELECT * FROM employee", (err, data) =>{
@@ -114,7 +114,7 @@ async function viewEmployees(){
     })
 
 }
-
+// removes an employee
 async function removeEmployee() {
     connection.query("SELECT * FROM employee", async (err, data) =>{
         if(err) throw err;
@@ -138,8 +138,8 @@ async function removeEmployee() {
         })
     })
 }
-
-async function viewDepartment() {
+// displays employee by department
+async function viewEmployeebyDepartment() {
     connection.query("SELECT * FROM department", async (err, data) => {
         if(err) throw err;
         let depArr = [];
@@ -167,3 +167,165 @@ async function viewDepartment() {
 })
 }
 
+
+// needs testing - views existing departments
+async function viewDepartments() {
+    connection.query("SELECT * FROM department", (err, data) => {
+        if(err) throw err;
+        console.table(data);
+    })
+}
+
+
+// needs testing - should add a new department
+async function addDepartment() {
+    let newDep = await inq.prompt([
+        {
+            type: "input",
+            message: "What department would you like to add?",
+            name: "newDepartment"
+        }
+    ])
+    connection.query(`INSERT INTO department(name) VALUES("${newDep.newDepartment}")`, (err) => {
+        if(err) throw err;
+        console.log("New department added.");
+    })
+}
+
+//needs testing - should remove a department
+
+async function removeDepartment() {
+    connection.query("SELECT * FROM department", (err,data) => {
+        if(err) throw err;
+        let depArr = [];
+        for(let i=0; i < data.length; i++){
+            depArr.push(data[i].name);
+        }
+        let depToRemove = await inq.prompt([
+            {
+                type: "list",
+                message: "Which department would you like to remove?",
+                name: "choice",
+                choices: depArr
+            }
+        ])
+        connection.query(`DELETE FROM department WHERE name = "${depToRemove.choice}"`, err => {
+            if(err) throw err;
+            console.log("Department Deleted")
+        })
+    })
+}
+
+//needs testing - should display all roles
+
+async function viewRoles() {
+    connection.query("SELECT * FROM roles", (err, data) => {
+        if(err) throw err;
+        console.table(data);
+    })
+}
+
+// needs testing - should add a new role
+
+async function addRoles () {
+    connection.query("SELECT * FROM department", (err,data) => {
+        if(err) throw err;
+        let depArr = [];
+        for(let i=0; i < data.length; i++){
+            depArr.push(data[i].name);
+        }
+    let newRole = await inq.prompt([
+        {
+            type: "input",
+            message: "What role would you like to add?",
+            name: "newRole"
+        },
+        {
+            type: "input",
+            message: "What is this role's salary?",
+            name: "salary"
+
+        },
+        {
+            type: "list",
+            message: "What department will this role work in?",
+            name: "department"
+        }
+    ]);
+    let chosenId = '';
+    for(let i = 0; i < data.length; i++){
+        if(data[i].name === chosen.departmentChoice){
+            chosenId = data[i].id;
+        }
+    }  connection.query(`INSERT INTO role(name, salary, department_id) VALUES("${newRole.newRole}", ${newRole.salary}, ${chosenId})`, err => {
+        if(err) throw err;
+        console.log("New role added.")
+    })
+
+})
+}
+
+// needs testing - should delete a role
+async function removeRole() {
+    connection.query("SELECT * FROM role", (err, data) => {
+        if(err) throw err;
+        let roleArr = [];
+        for(let i=0; i<data.length; i++){
+            roleArr.push(data[i].name)
+        }
+        let roleToRemove = await inq.prompt([
+            {
+                type: "list",
+                message: "What role would you like to remove?",
+                name: "role",
+                choices: roleArr
+            }
+        ])
+        connection.query(`DELETE FROM role WHERE name = "${roleToRemove.role}"`, err => {
+            if(err) throw err;
+            console.log("Role removed.")
+        })
+    })
+}
+// really needs testing - should update a given employee's role
+async function updateRole() {
+    connection.query("SELECT * FROM employee", (err, data) => {
+        if(err) throw err;
+        empArr = [];
+        for(let i = 0; i <data.length; i ++){
+            empArr.push(data[i].firstName + " " + data[i].lastName)
+        }
+        connection.query("SELECT * FROM role", (err, data) => {
+            if(err) throw err;
+            let roleArr = [];
+            for(let i=0; i<data.length; i++){
+                roleArr.push(data[i].name)
+            }
+        let toUpdate = await inq.prompt([
+            {
+                type: "list",
+                message: "Which employee would you like to update?",
+                name: "choice",
+                choices: empArr
+            },
+            {
+                type: "list",
+                message: "What role would you like to give this employee?",
+                name: "newRole",
+                choices: roleArr
+            }          
+        ])
+        let newRoleId = '';
+        for(let j = 0; j<roleArr.length; j++){
+            if(toUpdate.newRole === roleArr[i].name){
+                newRoleId = roleArr[i].id;
+            }
+        }
+        let toUpdateArr = await toUpdate.choice.split(" ");
+        connection.query(`UPDATE employee SET roleId = ${newRoleId} WHERE firstName = "${toUpdateArr[0]}" AND lastName = "${toUpdateArr[1]}"`, err => {
+            if(err) throw err;
+            console.log("Employee Updated.");
+        })
+    })
+})
+}
