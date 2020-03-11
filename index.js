@@ -177,7 +177,7 @@ async function viewDepartments() {
 }
 
 
-// should add a new department
+// adds a new department
 async function addDepartment() {
     let newDep = await inq.prompt([
         {
@@ -192,8 +192,7 @@ async function addDepartment() {
     })
 }
 
-// should remove a department
-
+// removes a department
 async function removeDepartment() {
     connection.query("SELECT * FROM department", async (err, data) => {
         if (err) throw err;
@@ -216,8 +215,7 @@ async function removeDepartment() {
     })
 }
 
-// should display all roles
-
+// displays all roles
 async function viewRoles() {
     connection.query("SELECT * FROM role", (err, data) => {
         if (err) throw err;
@@ -225,8 +223,7 @@ async function viewRoles() {
     })
 }
 
-// should add a new role
-
+// adds a new role
 async function addRole() {
     connection.query("SELECT * FROM department", async (err, data) => {
         if (err) throw err;
@@ -266,7 +263,7 @@ async function addRole() {
     })
 }
 
-// should delete a role
+// deletes a role
 async function removeRole() {
     connection.query("SELECT * FROM role", async (err, data) => {
         if (err) throw err;
@@ -288,7 +285,7 @@ async function removeRole() {
         })
     })
 }
-// really needs testing - should update a given employee's role
+// updates a given employee's role
 async function updateRole() {
     connection.query("SELECT * FROM employee", async (err, data) => {
         if (err) throw err;
