@@ -4,9 +4,6 @@ var inq = require('inquirer');
 const cTable = require('console.table');
 require('dotenv').config()
 
-
-let login = false;
-
 const connection = mysql.createConnection({
     port: 3306,
     host: process.env.DB_HOST,
@@ -18,6 +15,7 @@ const connection = mysql.createConnection({
 
 // initialized DB connection and checks user credentials
 function init() {
+    let login = false;
     inq.prompt([
         {
             type: "input",
