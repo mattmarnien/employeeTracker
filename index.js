@@ -375,7 +375,7 @@ async function whatToDo() {
         case 'View Departments':
             viewDepartments();
             break;
-        case 'Add Departments':
+        case 'Add Department':
             addDepartment();
             break;
         case 'Remove Department':
