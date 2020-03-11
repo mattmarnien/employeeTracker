@@ -94,11 +94,12 @@ async function addEmployee() {
 }
 
 // displays all current employees
-async function viewEmployees() {
-    console.log("\n\n\n");
+function viewEmployees() {
     connection.query("SELECT * FROM employee", (err, data) => {
         if (err) throw err;
-        console.table("\n \n" + data + "\n\n");
+        console.log("\n \n")
+        console.table(data);
+        console.log("\n \n")
         whatToDo();
 
     })
@@ -156,7 +157,9 @@ async function viewEmployeebyDepartment() {
         }
         connection.query(`SELECT employee.firstName, employee.lastName, role.title, department.name FROM Employee JOIN role ON employee.roleId = role.id JOIN department ON role.department_id = department.id WHERE department_id = 1 = ${chosenId}`, (err, data) => {
             if (err) throw err;
+            console.log("\n \n")
             console.table(data);
+            console.log("\n \n")
             whatToDo();
         })
     })
@@ -166,7 +169,9 @@ async function viewEmployeebyDepartment() {
 async function viewDepartments() {
     connection.query("SELECT * FROM department", (err, data) => {
         if (err) throw err;
+        console.log("\n \n");
         console.table(data);
+        console.log("\n \n");
         whatToDo();
     })
     
@@ -218,6 +223,9 @@ async function removeDepartment() {
 async function viewRoles() {
     connection.query("SELECT * FROM role", (err, data) => {
         if (err) throw err;
+        console.log("\n \n");
+        console.table(data);
+        console.log("\n \n");
         whatToDo();
     })
    
@@ -355,7 +363,7 @@ async function whatToDo() {
         case 'Add Employee':
             addEmployee();
             break;
-        case 'View Employee':
+        case 'View Employees':
             viewEmployees();
             break;
         case 'Remove Employee':
@@ -382,14 +390,26 @@ async function whatToDo() {
         case 'Remove Role':
             removeRole();
             break;
-        case "Update an Emplopyee's Role":
+        case "Update an Employee's Role":
             updateRole();
             break;
         case 'Exit':
             connection.end();
             return;
+        default:
+            whatToDo();
+            break;
     }
 }
+
+// async function viewEmployeeByManager() {
+    
+//     connection.query(`SELECT * FROM employee where managerId = ${chosenManagerId}`, (err, data) => {
+//         if(err) throw err;
+//         console.table(data);
+//         whatToDo();
+//     }
+// }
 
 // Starts the program
 
