@@ -14,18 +14,10 @@ var connection = mysql.createConnection({
 
 });
 
-connection.connect(async err => {
-    if (err) throw err;
-    console.log("Connected as " + connection.threadId);
-})
-
-// async function verify() {
-//     let users = connection.query("SELECT * FROM security;", (err, res) => {
-//     if(err)throw err;
-//     return res}
-//     )
-//     return users;
-// }
+// connection.connect(async err => {
+//     if (err) throw err;
+//     console.log("Connected as " + connection.threadId);
+// })
 
 // initialized DB connection and checks if user has credentials
 function init() {
@@ -55,7 +47,7 @@ function init() {
             }
         }
     ]).then(user => {
-        connection.connect(async function (err) {
+        connection.connect(function (err) {
             if (err) throw err;
             connection.query("SELECT * FROM security;", function (err, data) {
                 if (err) throw err;
@@ -68,7 +60,7 @@ function init() {
                 console.log(login);
                 if (login) {
                     console.log("Login Successful \n \n");
-                    connection.end();
+                    whatToDo();
                 }
                 else {
                     console.log("Login failed. Please try again \n \n");
@@ -77,7 +69,10 @@ function init() {
                 }
             })
         })
-    });
+    }).catch(err => {
+        if(err) throw err;
+    })
+    ;
 }
 
 
@@ -109,7 +104,7 @@ async function viewEmployees() {
     console.log("\n\n\n");
     connection.query("SELECT * FROM employee", (err, data) => {
         if (err) throw err;
-        console.table(data);
+        console.table("\n \n" +data + "\n\n");
 
     })
 
@@ -332,5 +327,81 @@ async function updateRole() {
         })
     })
 }
+
+// should route the user into various functions
+function whatToDo(){
+    inq.prompt([
+        {
+            type: "list",
+            message: "What would you like to do?",
+            name: "choice",
+            choices: ['Add Employee', 'View Employees', 'Remove Employee', 'View Employee by Department', 'View Departments', 'Add Departments', 'Remove Departments', 'View Roles', 'Add Role', 'Remove Role', "Update an Employee's Role", 'Exit']
+        }
+    ]).then((choice) => {
+    switch (choice.choice) {
+        case 'Add Employee':
+            addEmployee();
+            break;
+
+        case 'View Employees':
+            viewEmployees();
+            break;
+
+        case 'Remove Employee':
+            removeEmployee();
+            break;
+
+        case 'View Employee by Department':
+            viewEmployeebyDepartment();
+            break;
+
+        case 'View Departments':
+            viewDepartments();
+            break;
+
+        case 'Add Departments':
+            addDepartment();
+            break;
+
+        case 'Remove Departments':
+            removeDepartment();
+            break;
+
+        case 'View Roles':
+            viewRoles();
+            break;
+
+        case 'Add Role':
+            addRole();
+            break;
+
+        case 'Remove Role':
+            removeRole();
+            break;
+
+        case "Update an Employee's Role":
+            updateRole();
+            break;
+
+        case 'Exit':
+           connection.end();
+            return;
+
+        default:
+            connection.end();
+            break;
+    }}).then(() => {    
+        whatToDo();        
+    }).catch( err => {
+        if(err) throw err;
+    })
+
+}
+
+
+
+init();
+
+
 
 
