@@ -64,8 +64,6 @@ function init() {
                 }
             })
         })
-    }).catch(err => {
-        if (err) throw err;
     })
         ;
 }
@@ -350,7 +348,6 @@ async function updateRole() {
 
 // should route the user into various functions, is nested in all other functions to return to selection menu after tasks
 async function whatToDo() {
-    let done = false;
     let choice = await inq.prompt([
         {
             type: "list",
@@ -402,17 +399,7 @@ async function whatToDo() {
     }
 }
 
-// async function viewEmployeeByManager() {
-    
-//     connection.query(`SELECT * FROM employee where managerId = ${chosenManagerId}`, (err, data) => {
-//         if(err) throw err;
-//         console.table(data);
-//         whatToDo();
-//     }
-// }
-
 // Starts the program
-
 init();
 
 
