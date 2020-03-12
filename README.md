@@ -4,5 +4,5 @@ A CLI which allows simple changes to an employee/company database. The user must
 
 
 
-![cliGif](employeeTracker.gif)
+![cliGif](images/employeeTracker.gif)
 
